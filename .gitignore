@@ -6,6 +6,15 @@ __pycache__/
 # C extensions
 *.so
 
+# Mac OS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# Temps
+tmp/
+
 # Distribution / packaging
 .Python
 build/
@@ -216,3 +225,14 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Autres
+.venv/
+__pycache__/
+*.pyc
+.env
+.ipynb_checkpoints/
+.ruff_cache/
+*.sqlite
+.langgraph_api/
+data/qdrant/

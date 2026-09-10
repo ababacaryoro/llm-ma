@@ -1,0 +1,65 @@
+[project]
+name = "llm-ma-formation"
+version = "1.0.0"
+description = "Formation IA Agentique - Conception d'applications multi-agents basees sur des LLMs (LLM-MA)"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    # --- Coeur agents ---
+    "langchain>=1.0",
+    "langgraph>=1.0",
+    "langgraph-supervisor>=0.0.29",
+    "langgraph-swarm>=0.0.14",
+    "langgraph-checkpoint-sqlite>=2.0",
+    "langgraph-cli[inmem]>=0.2",
+    # --- Fournisseurs LLM (bascule via LLM_PROVIDER dans .env) ---
+    "langchain-openai>=1.0",
+    "langchain-mistralai>=1.0",
+    "langchain-ollama>=1.0",
+    # --- Outils ---
+    "ddgs>=9.0",                      # recherche web sans cle API
+    "fastmcp>=2.0",                   # serveur MCP de demo
+    "langchain-mcp-adapters>=0.1",    # consommer des outils MCP dans LangGraph
+    # --- RAG (zero cout : embeddings locaux fastembed) ---
+    "qdrant-client[fastembed]>=1.12",
+    # --- Observabilite ---
+    "langfuse>=3.0",
+    # --- Confort ---
+    "pydantic>=2.7",
+    "python-dotenv>=1.0",
+    "rich>=13.0",
+    "jupyterlab>=4.2",
+    "ipykernel>=6.29",
+    "grandalf>=0.8",                  # rendu ascii des graphes sans dependance externe
+]
+
+[dependency-groups]
+dev = ["ruff>=0.6"]
+
+[project.scripts]
+check-env = "scripts.check_env:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["common", "scripts"]
+
+[tool.uv]
+# Garantit que le lock resout des versions installables sur TOUTES les plateformes
+# des participants (dont les Mac Intel, abandonnes par les wheels recents d'onnxruntime).
+required-environments = [
+    "sys_platform == 'darwin' and platform_machine == 'arm64'",
+    "sys_platform == 'darwin' and platform_machine == 'x86_64'",
+    "sys_platform == 'win32'",
+    "sys_platform == 'linux'",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+# NOTE CrewAI : volontairement absent d'ici (arbre de dependances conflictuel avec
+# langchain 1.x). Le bonus CrewAI de TP2 a son propre mini-projet isole :
+#   cd 04-multi-agents/bonus-crewai && uv sync && uv run python demo.py
