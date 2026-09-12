@@ -1,0 +1,17 @@
+[
+  {
+    "question": "Quelles sont les quatre composantes d'un agent basé sur un LLM ?",
+    "faits_attendus": ["modèle", "mémoire", "outils", "boucle"],
+    "reference": "01-agents.md"
+  },
+  {
+    "question": "Quelles sont les limites structurelles du patron ReAct ?",
+    "faits_attendus": ["plan global", "boucles infinies", "historique"],
+    "reference": "01-agents.md"
+  },
+  {
+    "question": "Qu'est-ce qui distingue un workflow d'un agent ?",
+    "faits_attendus": ["autonomie", "fixé à l'avance", "dynamiquement"],
+    "reference": "01-agents.md"
+  }
+]

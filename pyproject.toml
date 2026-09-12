@@ -60,6 +60,3 @@ required-environments = [
 line-length = 100
 target-version = "py312"
 
-# NOTE CrewAI : volontairement absent d'ici (arbre de dependances conflictuel avec
-# langchain 1.x). Le bonus CrewAI de TP2 a son propre mini-projet isole :
-#   cd 04-multi-agents/bonus-crewai && uv sync && uv run python demo.py

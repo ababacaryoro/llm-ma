@@ -1,94 +1,128 @@
 # Mise en place de l'environnement de travail
 
+À faire **avant la formation**. Compter 20 à 30 minutes, dont une bonne partie de téléchargement. En cas de blocage, voir [DEPANNAGE.md](DEPANNAGE.md), puis prévenir le formateur.
 
-Ce guide décrit l'installation à réaliser au plus tôt possible. Comptez 20 à 30 minutes. En cas de blocage, demandez de l'aide.
+Deux parcours :
 
-Outils installés : **Visual Studio Code** (éditeur), **uv** (gestionnaire d'environnements et de dépendances Python), **Git** (récupération du dépôt de la formation).
+- **Parcours A, installation locale** (sections 1 à 9) : VS Code, Git, uv, puis le dépôt.
+- **Parcours B, GitHub Codespaces** (section 10) : rien à installer, tout tourne dans le navigateur. Solution de repli si le poste est verrouillé ou si le parcours A échoue.
+
+Dans les deux cas, la section 0 (comptes) est nécessaire.
+
+---
+
+## 0. Comptes à créer
+
+| Compte | Obligatoire | Rôle | Lien |
+|---|---|---|---|
+| Mistral AI | **Oui** | Fournisseur LLM des TP (tier gratuit) | <https://console.mistral.ai> |
+| Langfuse (région **EU**) | Recommandé | Visualiser les traces des agents (jour 2) | <https://cloud.langfuse.com> |
+| GitHub | Optionnel | Codespaces (parcours B), clone avec `git` | <https://github.com> |
+| Hugging Face | Optionnel | Explorer des modèles open-weight | <https://huggingface.co> |
+
+**Mistral** : après inscription, activer le plan *Experiment* (gratuit, sans carte bancaire ; une vérification par numéro de téléphone est demandée), puis *Clés API → Créer une nouvelle clé*. Copier la clé immédiatement, elle n'est plus affichée ensuite. Sans plan activé, toute requête est refusée avec une erreur 429.
+
+**Langfuse** : créer une *organisation* puis un *projet* « formation ». Dans *Settings → API Keys*, noter la clé publique (`pk-lf-…`) et la clé secrète (`sk-lf-…`).
 
 ---
 
 ## 1. Installer Visual Studio Code
 
-Téléchargez et installez VS Code depuis <https://code.visualstudio.com>.
+Télécharger depuis <https://code.visualstudio.com>.
 
-Sous Windows, cochez pendant l'installation les options **« Ajouter à PATH »** et **« Ouvrir avec Code »** (menu contextuel de l'explorateur) : elles simplifient la suite.
+Sous Windows, cocher pendant l'installation **« Ajouter à PATH »** et **« Ouvrir avec Code »**.
 
-## 2. Installer les extensions
+PyCharm convient aussi, à condition que l'édition installée inclue le support Jupyter. Les instructions ci-dessous sont données pour VS Code.
 
-Dans VS Code, ouvrez le panneau **Extensions** (`Ctrl+Shift+X`, ou `Cmd+Shift+X` sur macOS) et installez :
+## 2. Installer les extensions VS Code
+
+Panneau **Extensions** (`Ctrl+Shift+X`, `Cmd+Shift+X` sur macOS). Coller l'identifiant dans la barre de recherche pour tomber directement sur la bonne extension.
 
 | Extension | Identifiant | Rôle |
 |---|---|---|
 | Python | `ms-python.python` | Support du langage, sélection de l'interpréteur |
 | Pylance | `ms-python.vscode-pylance` | Autocomplétion et analyse de code |
 | Jupyter | `ms-toolsai.jupyter` | Exécution des notebooks `.ipynb` dans VS Code |
-| Data Wrangler *(optionnel)* | `ms-toolsai.datawrangler` | Exploration visuelle des DataFrames |
 | Ruff *(optionnel)* | `charliermarsh.ruff` | Formatage et qualité du code |
 
-Astuce : Tapez le nom ou collez l'identifiant dans la barre de recherche des extensions pour tomber directement sur la bonne.
+À l'ouverture du dépôt, VS Code propose lui-même ces extensions (fichier `.vscode/extensions.json`).
 
 ## 3. Installer Git
 
-Vérifiez d'abord si Git est déjà présent, dans un terminal :
+Vérifier d'abord, dans un terminal :
 
 ```bash
 git --version
 ```
 
-Si la commande échoue, installez Git depuis <https://git-scm.com/downloads> (sous Windows, conservez les options par défaut).
+Si la commande échoue : <https://git-scm.com/downloads> (sous Windows, conserver les options par défaut).
+
+Git n'est pas indispensable : le dépôt peut aussi être téléchargé en zip (section 5).
 
 ## 4. Installer uv
 
-`uv` remplace `pip`, `venv` et `conda` en un seul outil, beaucoup plus rapide. Il installe aussi Python lui-même : **inutile d'installer Python séparément**.
+`uv` remplace `pip`, `venv` et `conda` en un seul outil. Il installe aussi Python : **inutile d'installer Python séparément**.
 
-**Windows** — dans PowerShell :
+**Windows**, dans PowerShell :
 
 ```powershell
 powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 ```
 
-**macOS / Linux** — dans un terminal :
+**macOS / Linux**, dans un terminal :
 
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-**Fermez puis rouvrez le terminal**, et vérifiez :
+**Fermer puis rouvrir le terminal**, et vérifier :
 
 ```bash
 uv --version
 ```
 
-Si la commande n'est pas reconnue, c'est peut être dû au fait que la commande n'est pas enregistrée dans les variables d'environnement. Il faut donc exécuter dans le terminal le code suivant, en adaptant : 
+Si la commande n'est pas reconnue, le dossier d'installation n'est pas dans le `PATH`. Correctif :
 
-Pour Windows (remplacer `USERPROFILE` par votre nom d'utilisateur de votre machine )
-```bash
-$env:Path = "$env:USERPROFILE\.local\bin;$env:Path"
-```
+- **Windows** (PowerShell, à taper tel quel, sans rien remplacer) :
 
-Pour Linux/Mac
+  ```powershell
+  $env:Path = "$env:USERPROFILE\.local\bin;$env:Path"
+  ```
 
-```bash
-echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
-source ~/.bashrc
-```
+  Cette ligne ne vaut que pour la session en cours. Pour la rendre permanente : *Paramètres → Système → Informations système → Paramètres système avancés → Variables d'environnement*, ajouter `%USERPROFILE%\.local\bin` à la variable `Path` de l'utilisateur, puis rouvrir le terminal.
 
-voir la section Dépannage.
+- **macOS** (le shell par défaut est zsh) :
+
+  ```bash
+  echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
+  source ~/.zshrc
+  ```
+
+- **Linux** (bash) :
+
+  ```bash
+  echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+  source ~/.bashrc
+  ```
 
 ## 5. Récupérer le dépôt de la formation
 
-Aller sur la page github https://github.com/ababacaryoro/llm-ma.git. 
-- Si vous êtes à l'aise sur git, faite un clone directement à partir de la commande ci-dessous, depuis un terminal de VS Code, et à partir du dossier de votre choix : 
+Dépôt : <https://github.com/ababacaryoro/llm-ma>
+
+**Avec Git**, depuis le dossier de son choix :
 
 ```bash
 git clone https://github.com/ababacaryoro/llm-ma.git
 cd llm-ma
 ```
-- Sinon, télécharger le dossier complet du projet à partir de la page web sur github, en cliquant sur *Code → Download as zip* puis dezippez le dans le dossier de votre choix. Ensuite, ouvrez le dossier dans VS Code : `code .` (ou *Fichier → Ouvrir le dossier*).
 
-## 6. Créer l'environnement virtuel et installer les dépendances
+**Sans Git** : sur la page GitHub, bouton *Code → Download ZIP*, dézipper dans le dossier de son choix.
 
-Le dépôt contient déjà les fichiers `pyproject.toml` (liste des dépendances) et `uv.lock` (versions exactes). Une seule commande suffit, dans le terminal intégré de VS Code (`Ctrl+ù` ou *Terminal → Nouveau terminal*) :
+Puis ouvrir le dossier `llm-ma` dans VS Code (*Fichier → Ouvrir le dossier*, ou `code .` depuis un terminal placé dans le dossier).
+
+## 6. Créer l'environnement et installer les dépendances
+
+Le dépôt contient `pyproject.toml` (liste des dépendances) et `uv.lock` (versions exactes). Une seule commande, dans le terminal intégré de VS Code (*Terminal → Nouveau terminal*) :
 
 ```bash
 uv sync
@@ -96,19 +130,95 @@ uv sync
 
 Cette commande :
 
-- installe la version de Python attendue si elle est absente ;
-- crée l'environnement virtuel dans un dossier `.venv/` à la racine du projet ;
-- installe toutes les bibliothèques de la formation (pandas, dask, pyarrow, jupyter, ipykernel…) aux versions exactes du `uv.lock`.
+- installe Python 3.12 s'il est absent ;
+- crée l'environnement virtuel dans `.venv/` à la racine du projet ;
+- installe toutes les bibliothèques de la formation (LangChain, LangGraph, Qdrant, Langfuse, Jupyter…) aux versions exactes du `uv.lock`.
 
-Tout le monde obtient ainsi **exactement le même environnement**, ce qui évite les écarts de comportement d'un poste à l'autre.
+Compter quelques centaines de Mo et 3 à 10 minutes selon la connexion. Tout le monde obtient exactement le même environnement, ce qui évite les écarts de comportement d'un poste à l'autre.
 
 ## 7. Connecter VS Code à cet environnement
 
-1. Ouvrez la palette de commandes : `Ctrl+Shift+P` (`Cmd+Shift+P` sur macOS).
-2. Tapez **« Python: Select Interpreter »** et validez.
-3. Choisissez l'interpréteur situé dans `.venv` du projet (il est en général proposé en tête de liste, avec la mention *Recommended*).
+Deux réglages distincts, tous les deux nécessaires.
 
-Ou alors taper la commande : `.\.venv\Scripts\activate`.
+**L'interpréteur Python** (pour les fichiers `.py` et le terminal) :
+
+1. Palette de commandes : `Ctrl+Shift+P` (`Cmd+Shift+P` sur macOS).
+2. Taper **Python: Select Interpreter**.
+3. Choisir l'interpréteur situé dans `.venv` du projet (proposé en tête de liste, mention *Recommended*).
+
+**Le noyau Jupyter** (pour les notebooks `.ipynb`) :
+
+1. Ouvrir n'importe quel notebook du dépôt.
+2. En haut à droite, cliquer sur **Select Kernel** (ou sur le nom du noyau courant).
+3. Choisir *Python Environments…* puis `.venv`.
+
+Ce choix est mémorisé pour les notebooks suivants.
+
+## 8. Variables d'environnement
+
+1. À la racine du projet, copier le fichier `env.example` et nommer la copie `.env` (avec le point devant).
+2. Ouvrir `.env` et renseigner :
+
+```
+LLM_PROVIDER=mistral
+MISTRAL_API_KEY=<la clé créée en section 0>
+```
+
+3. Si un compte Langfuse a été créé, renseigner aussi `LANGFUSE_PUBLIC_KEY` et `LANGFUSE_SECRET_KEY`. Sinon, laisser ces lignes vides : tout fonctionne sans traces.
+
+Le fichier `.env` contient des secrets : il est ignoré par Git et ne doit jamais être partagé.
+
+## 9. Vérifier l'installation
+
+```bash
+uv run check-env
+```
+
+Le script vérifie Python, les dépendances, le fichier `.env`, fait un appel réel au LLM et télécharge les modèles d'embeddings (~230 Mo, une seule fois). Résultat attendu :
+
+```
+  OK         Python 3.12 — 3.12.x
+  OK         module langchain
+  ...
+  OK         fichier .env
+  OK         fournisseur LLM — LLM_PROVIDER=mistral
+  OK         appel LLM — reponse: 'pong'
+  OK         embeddings locaux (fastembed) — modeles charges
+  ATTENTION  cles Langfuse — traces desactivees
+  ATTENTION  docker — absent — sans impact sur les TP
+─────────────────────────────────────────────
+Environnement pret (2 avertissement(s) non bloquant(s))
+```
+
+Les lignes `ATTENTION` ne bloquent pas. Une ligne `ERREUR` doit être corrigée : voir [DEPANNAGE.md](DEPANNAGE.md).
+
+**Checklist finale**
+
+- [ ] `uv run check-env` se termine par `Environnement pret`
+- [ ] Un notebook s'ouvre dans VS Code avec le noyau `.venv` sélectionné
+- [ ] La clé Mistral est dans `.env`
+
+---
+
+## 10. Parcours B : GitHub Codespaces
+
+Environnement complet dans le navigateur, sans rien installer sur le poste. Nécessite un compte GitHub (gratuit). Le quota mensuel gratuit d'un compte personnel couvre largement les deux jours.
+
+1. Ouvrir <https://github.com/ababacaryoro/llm-ma>.
+2. Bouton *Code → Codespaces → Create codespace on main*.
+3. Attendre la fin de l'installation automatique (2 à 3 minutes, visible dans le terminal).
+4. Copier `env.example` en `.env`, renseigner la clé Mistral (section 8).
+5. Terminal : `uv run check-env`.
+
+VS Code dans le navigateur se comporte comme la version locale (sélection du noyau, section 7). Penser à arrêter le codespace en fin de journée (*Codespaces → Stop*) pour préserver le quota.
+
+---
+
+## Docker (facultatif)
+
+Aucun TP n'en dépend. Docker sert uniquement à une démonstration d'industrialisation si nécessaire.
+
+> **Licence** : Docker Desktop n'est gratuit que pour l'usage personnel, l'éducation et les entreprises de moins de 250 salariés et 10 M$ de chiffre d'affaires. Dans un grand groupe, ne pas l'installer sur un poste professionnel sans licence. Alternatives gratuites : Codespaces (Docker inclus), Podman Desktop, Rancher Desktop, Docker Engine sous WSL2.
 
 ---
 
@@ -116,72 +226,43 @@ Ou alors taper la commande : `.\.venv\Scripts\activate`.
 
 | Commande | Effet |
 |---|---|
-| `uv sync` | Installe / met à jour l'environnement à partir de `pyproject.toml` et `uv.lock` |
-| `uv add <paquet>` | Ajoute une dépendance au projet et l'installe |
-| `uv add --dev <paquet>` | Ajoute une dépendance de développement (tests, outils) |
+| `uv sync` | Installe ou met à jour l'environnement depuis `pyproject.toml` et `uv.lock` |
+| `uv add <paquet>` | Ajoute une dépendance et l'installe |
+| `uv add --dev <paquet>` | Ajoute une dépendance de développement |
 | `uv remove <paquet>` | Retire une dépendance |
-| `uv run <commande>` | Exécute une commande dans l'environnement du projet, sans l'activer |
-| `uv run python script.py` | Exécute un script Python dans l'environnement du projet |
-| `uv lock` | Recalcule le fichier de verrouillage des versions |
-| `uv python list` | Liste les versions de Python disponibles / installées |
+| `uv run <commande>` | Exécute une commande dans l'environnement, sans l'activer |
+| `uv run python script.py` | Exécute un script Python dans l'environnement |
+| `uv lock` | Recalcule le fichier de verrouillage |
+| `uv python list` | Liste les versions de Python disponibles et installées |
 | `uv self update` | Met à jour uv |
 
-Avec `uv run`, il n'est **jamais nécessaire d'activer manuellement** l'environnement virtuel. Si vous y tenez : `source .venv/bin/activate` (macOS/Linux) ou `.venv\Scripts\activate` (Windows).
+Avec `uv run`, activer l'environnement n'est jamais nécessaire. Pour le faire malgré tout : `source .venv/bin/activate` (macOS/Linux) ou `.venv\Scripts\activate` (Windows).
 
-Règle de versionnement : `pyproject.toml` et `uv.lock` sont suivis par Git ; le dossier `.venv/` ne l'est **jamais** (il figure dans le `.gitignore`).
+`pyproject.toml` et `uv.lock` sont suivis par Git ; `.venv/` ne l'est jamais.
 
----
+## Équivalences macOS / Windows
 
-## Dépannage
+Toutes les commandes du cours passent par `uv run …`, identiques sur les trois OS. Les seules différences :
 
-**`Powershell` : Impossible de charger le fichier….avec UnauthorizedAccess**
+| Action | macOS / Linux | Windows (PowerShell) |
+|---|---|---|
+| Copier le fichier d'environnement | `cp env.example .env` | `Copy-Item env.example .env` |
+| Chemin de l'interpréteur | `.venv/bin/python` | `.venv\Scripts\python.exe` |
+| Ouvrir le terminal intégré | `` Ctrl+` `` (`Ctrl+ù` en AZERTY) | idem |
 
-Si les commandes sur le terminal ne marchent pas sur Windows, tapez dans le terminal : 
-```powershell
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
-```
-
-**`uv` : commande introuvable après installation**
-Fermez complètement le terminal (et VS Code) puis rouvrez-les : la variable `PATH` n'est prise en compte qu'au démarrage d'une nouvelle session.
-
-**Le téléchargement échoue derrière le pare-feu ou le proxy de l'institution**
-Les accès suivants doivent être autorisés : `github.com`, `pypi.org`, `files.pythonhosted.org`, `astral.sh`. Si un proxy est en place, renseignez-le avant de relancer la commande :
-
-```bash
-# macOS / Linux
-export HTTPS_PROXY=http://<serveur>:<port>
-```
-
-```powershell
-# Windows (PowerShell)
-$env:HTTPS_PROXY = "http://<serveur>:<port>"
-```
-
-En cas de connexion lente, augmentez le délai d'attente : `UV_HTTP_TIMEOUT=120`.
-
-**L'environnement `.venv` n'apparaît pas dans la liste des interpréteurs**
-Relancez `uv sync`, puis rechargez la fenêtre VS Code : palette de commandes → *Developer: Reload Window*. Si le problème persiste, choisissez *Enter interpreter path* et saisissez le chemin complet vers `.venv/bin/python` (macOS/Linux) ou `.venv\Scripts\python.exe` (Windows).
-
-**Le notebook ne trouve pas de noyau (kernel)**
-Le paquet `ipykernel` doit être présent dans l'environnement : `uv sync` l'installe automatiquement. Si nécessaire : `uv add --dev ipykernel`, puis resélectionnez le noyau.
-
-**« Import could not be resolved » alors que la bibliothèque est installée**
-Le mauvais interpréteur est sélectionné. Reprenez l'étape 7, puis rechargez la fenêtre.
-
-**Aucune installation possible sur le poste (droits administrateur refusés)**
-Signalez-le dès que possible : une solution de repli (environnement partagé sur serveur) sera mise en place.
+**Mac Intel ou Apple Silicon** : le dépôt s'installe sur les deux. Sur Apple Silicon (M1 à M4), si `uv sync` identifie la machine en `x86_64`, le terminal ou uv tourne sous Rosetta : comparer `uname -m` et `uv python list`, puis réinstaller uv depuis un terminal natif (arm64). Les embeddings locaux sont nettement plus rapides en natif.
 
 ---
 
-## Annexe — Démarrer un projet uv depuis zéro
+## Annexe : démarrer un projet uv depuis zéro
 
-Utile pour votre projet de groupe ou pour vos travaux ultérieurs :
+Pour les travaux ultérieurs :
 
 ```bash
 uv init mon-projet          # crée pyproject.toml, .python-version, .gitignore
 cd mon-projet
 uv python pin 3.12          # fige la version de Python
-uv add pandas pyarrow       # ajoute les dépendances (crée .venv au passage)
+uv add langchain langgraph  # ajoute les dépendances (crée .venv au passage)
 uv add --dev ipykernel      # nécessaire pour les notebooks dans VS Code
 code .                      # ouvre le projet dans VS Code
 ```

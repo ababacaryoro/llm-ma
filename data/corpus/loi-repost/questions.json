@@ -1,0 +1,17 @@
+[
+  {
+    "question": "Quelles sont les peines prévues lorsqu'une personne ne remet pas les produits explosifs après une décision de dessaisissement du préfet ?",
+    "faits_attendus": ["un an", "7 500"],
+    "reference": "article 1, art. L. 2352-5 du code de la défense"
+  },
+  {
+    "question": "Quelle peine est prévue pour l'inhalation de protoxyde d'azote en dehors de tout acte médical ?",
+    "faits_attendus": ["un an", "3 750"],
+    "reference": "article 30, art. L. 3611-4 du code de la santé publique"
+  },
+  {
+    "question": "Quelle peine encourt une personne qui contribue à la préparation ou au déroulement d'un rassemblement festif à caractère musical sans déclaration préalable ?",
+    "faits_attendus": ["deux ans", "30 000"],
+    "reference": "article 3, art. L. 211-15 du code de la sécurité intérieure"
+  }
+]

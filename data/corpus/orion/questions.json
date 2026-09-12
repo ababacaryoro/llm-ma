@@ -1,0 +1,17 @@
+[
+  {
+    "question": "Quel est le budget de la phase 1 du projet ORION et qui en est le sponsor ?",
+    "faits_attendus": ["185 000", "Hélène Vasseur"],
+    "reference": "sections 2 et 5"
+  },
+  {
+    "question": "À quelle date a lieu le comité go / no-go du projet ORION et quel taux de résolution sans ticket est attendu ?",
+    "faits_attendus": ["30 septembre 2026", "60 %"],
+    "reference": "sections 5 et 6"
+  },
+  {
+    "question": "Combien de temps les conversations avec l'assistant ORION sont-elles conservées ?",
+    "faits_attendus": ["90 jours"],
+    "reference": "décision D4"
+  }
+]
