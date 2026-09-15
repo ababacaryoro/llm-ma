@@ -13,10 +13,11 @@ from __future__ import annotations
 
 import re
 import time
-import unicodedata
 
 from rich.console import Console
 from rich.table import Table
+
+from common.evaluation import faits_trouves, normaliser
 
 console = Console()
 
@@ -35,15 +36,6 @@ _RE_AVEU = re.compile(
 )
 
 
-def normaliser(texte: str) -> str:
-    """Minuscules, sans accents ni mise en forme markdown, apostrophes et espaces unifies."""
-    texte = unicodedata.normalize("NFKD", texte)
-    texte = "".join(c for c in texte if not unicodedata.combining(c))
-    texte = texte.replace("’", "'").replace("‘", "'")
-    texte = re.sub(r"[*_`]+", "", texte)  # **REPONSE** vaut REPONSE
-    return re.sub(r"\s+", " ", texte).lower().strip()
-
-
 def format_ok(reponse: str) -> bool:
     """Les 4 champs sont presents, dans l'ordre, et CONFIANCE a une valeur autorisee."""
     txt = normaliser(reponse)
@@ -51,17 +43,6 @@ def format_ok(reponse: str) -> bool:
     if any(p < 0 for p in positions) or positions != sorted(positions):
         return False
     return bool(_RE_CONFIANCE.search(txt))
-
-
-def faits_trouves(reponse: str, faits_attendus: list) -> list:
-    """Un fait est une chaine, ou une liste de variantes dont une seule doit apparaitre."""
-    txt = normaliser(reponse)
-    trouves = []
-    for fait in faits_attendus:
-        variantes = [fait] if isinstance(fait, str) else fait
-        if any(normaliser(v) in txt for v in variantes):
-            trouves.append(fait)
-    return trouves
 
 
 def champ_source(reponse: str) -> str:

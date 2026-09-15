@@ -10,10 +10,21 @@ Rien d'autre à changer : les notebooks ne dépendent d'aucun fournisseur.
 
 ## mistral (défaut)
 
-- Compte gratuit sur <https://console.mistral.ai>, plan *Experiment*, sans carte bancaire.
-- Modèle par défaut : `mistral-small-latest`. Surchargeable avec `LLM_MODEL` dans `.env`.
-- Limite : quelques requêtes par seconde et un quota mensuel. Suffisant pour les exercices unitaires. Sur les boucles multi-agents (10 à 30 appels par run), attendre entre deux exécutions.
-- Erreur 429 = limite de débit atteinte : attendre et relancer la cellule.
+- Compte gratuit sur <https://console.mistral.ai>, plan *Experiment*, sans carte bancaire, numéro de téléphone vérifié.
+- Sur le plan Experiment, seuls certains modèles ont un débit non nul. Constaté en septembre 2026 (en-tête `x-ratelimit-limit-req-minute` des réponses) :
+
+  | Modèle | Requêtes / min | Usage |
+  |---|---|---|
+  | `ministral-3b-latest` | 750 | très rapide, qualité limitée |
+  | `ministral-8b-latest` | 188 | **défaut de la formation** |
+  | `ministral-14b-latest` | 30 | meilleure qualité, débit à surveiller |
+  | `codestral-latest` | 125 | code |
+  | `mistral-small`, `mistral-medium`, `magistral`, `devstral` | **0** | 429 systématique |
+  | `mistral-large` | refusé | 403, hors plan |
+
+  Ces limites changent : vérifier sur <https://admin.mistral.ai/plateforme/limits>.
+- Changer de modèle : `LLM_MODEL=mistralai:ministral-14b-latest` dans `.env`.
+- Erreur 429 en cours de TP = débit dépassé : attendre et relancer (`common.llm.invoquer` le fait automatiquement). Erreur 429 dès le premier appel = modèle hors plan ou plan non activé, voir [DEPANNAGE.md](DEPANNAGE.md).
 
 ## openai (si une clé est fournie)
 
